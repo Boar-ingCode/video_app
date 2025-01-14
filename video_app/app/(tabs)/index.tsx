@@ -1,15 +1,28 @@
-import React from "react";
+import React, {useState} from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+type RootStackParamList = {
+  Main: undefined;
+  Home: undefined;
+};
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Main">;
 
 const MainPage: React.FC = () => {
-  console.log("MainPage loaded");
+  const navigation = useNavigation<NavigationProp>();
+
+  const handleNavigate = () => {
+    navigation.navigate("Home");
+  };
 
   return (
     <View style={styles.container}>
       {/* Logo Section */}
       <View style={styles.logoContainer}>
         <Image
-          source={require("../../assets/firstPage/logo.png")} // Ensure the path is correct
+          source={require("../../assets/firstPage/logo.png")} 
           style={styles.logoStyle}
         />
       </View>
@@ -30,7 +43,7 @@ const MainPage: React.FC = () => {
       </View>
 
       {/* Button */}
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleNavigate}>
         <Text style={styles.buttonText}>Log in as guest</Text>
       </TouchableOpacity>
 

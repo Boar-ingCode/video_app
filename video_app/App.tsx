@@ -1,17 +1,30 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "./app/(tabs)"; // Replace with your home screen file path
-import MainPage from "./app/(tabs)/"; // Replace with your main screen file path
+import MainPage from "./app/(tabs)";
+import HomeScreen from "./app/(tabs)";
 
-const Stack = createNativeStackNavigator();
+type RootStackParamList = {
+  Main: undefined;
+  Home: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Main" component={MainPage} />
+      <Stack.Navigator initialRouteName="Main">
+        <Stack.Screen
+          name="Main"
+          component={MainPage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: "Home" }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
