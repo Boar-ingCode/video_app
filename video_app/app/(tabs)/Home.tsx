@@ -7,87 +7,129 @@ import {
   FlatList,
   Text,
   ActivityIndicator,
-  Image
+  Image,
 } from "react-native";
 import SearchIcon from "../../assets/icons/search-icon.svg";
-import SettingsIcon from "../../assets/icons/settings-icon.svg";
 import HomeIcon from "../../assets/icons/home-icon.svg";
-import { WebView } from "react-native-webview";
+import SettingsIcon from "../../assets/icons/settings-icon.svg";
 
-const API_KEY = "AIzaSyDCT4LQMeXn-TVHSkGZlV2VZTdEQ-F_f5c"; 
+const API_KEY = "AIzaSyBeNcN5uuIUx5_TXsFqFFMlPqv8f7LFQwk";
 
 const HomeScreen: React.FC = () => {
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+
+  const [loading, setLoading] = useState(false);
+
   const [reactNativeVideos, setReactNativeVideos] = useState<any[]>([]);
   const [reactVideos, setReactVideos] = useState<any[]>([]);
   const [typescriptVideos, setTypescriptVideos] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchVideos = async (
+    const fetchCategoryVideos = async (
       query: string,
       setState: React.Dispatch<React.SetStateAction<any[]>>
     ) => {
       try {
-        const searchResponse = await fetch(
+        const res = await fetch(
           `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&q=${query}&type=video&part=snippet&maxResults=2`
         );
-        const searchData = await searchResponse.json();
+        const data = await res.json();
 
-        if (!searchData.items || searchData.items.length === 0) {
-          console.error(`No videos found for query: ${query}`, searchData);
+        if (!data.items || data.items.length === 0) {
+          console.warn(`No videos found for category query: ${query}`);
+          setState([]);
           return;
         }
 
-        const videoIds = searchData.items
-          .map((item: any) => item.id.videoId)
-          .join(",");
-
-        const detailsResponse = await fetch(
+        const videoIds = data.items.map((item: any) => item.id.videoId).join(",");
+        const detailsRes = await fetch(
           `https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds}&part=snippet,statistics`
         );
-        const detailsData = await detailsResponse.json();
+        const detailsData = await detailsRes.json();
 
-        if (!detailsData.items || detailsData.items.length === 0) {
-          console.error(`No video details found for query: ${query}`, detailsData);
-          return;
-        }
-
-        setState(detailsData.items);
+        setState(detailsData.items || []);
       } catch (error) {
         console.error(`Error fetching ${query} videos:`, error);
       }
     };
 
-    const fetchAllVideos = async () => {
+    const fetchAllCategories = async () => {
       setLoading(true);
       await Promise.all([
-        fetchVideos("react+native+tutorial", setReactNativeVideos),
-        fetchVideos("react+tutorial", setReactVideos),
-        fetchVideos("typescript+tutorial", setTypescriptVideos),
+        fetchCategoryVideos("react+native+tutorial", setReactNativeVideos),
+        fetchCategoryVideos("react+tutorial", setReactVideos),
+        fetchCategoryVideos("typescript+tutorial", setTypescriptVideos),
       ]);
       setLoading(false);
     };
 
-    fetchAllVideos();
+    fetchAllCategories();
   }, []);
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return; 
+    setLoading(true);
+
+    try {
+      const searchResponse = await fetch(
+        `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&q=${encodeURIComponent(
+          searchQuery
+        )}&type=video&part=snippet&maxResults=10`
+      );
+      const searchData = await searchResponse.json();
+
+      if (!searchData.items || searchData.items.length === 0) {
+        console.warn(`No videos found for: ${searchQuery}`);
+        setSearchResults([]);
+        setLoading(false);
+        return;
+      }
+
+      const videoIds = searchData.items.map((item: any) => item.id.videoId).join(",");
+      const detailsResponse = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds}&part=snippet,statistics`
+      );
+      const detailsData = await detailsResponse.json();
+
+      setSearchResults(detailsData.items || []);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const renderVideoItem = ({ item }: { item: any }) => {
     const publicationDate = new Date(item.snippet.publishedAt).toLocaleDateString();
 
     return (
-      <TouchableOpacity
-        style={styles.videoContainer}
-        onPress={() => setSelectedVideoId(item.id)}
-      >
+      <View style={styles.videoContainer}>
         <Image source={{ uri: item.snippet.thumbnails.medium.url }} style={styles.thumbnail} />
-        <View style={styles.videoInfo}>
-          <Text style={styles.videoTitle} numberOfLines={2}>
-            {item.snippet.title}
-          </Text>
-          <Text style={styles.videoDate}>{publicationDate}</Text>
-        </View>
-      </TouchableOpacity>
+        <Text style={styles.videoTitle} numberOfLines={2}>
+          {item.snippet.title}
+        </Text>
+        <Text style={styles.videoDate}>{publicationDate}</Text>
+      </View>
+    );
+  };
+
+  const renderSearchItem = ({ item }: { item: any }) => {
+    const publicationDate = new Date(item.snippet.publishedAt).toLocaleDateString();
+  
+    return (
+      <View style={styles.searchItemContainer}>
+        <Image 
+          source={{ uri: item.snippet.thumbnails.medium.url }} 
+          style={styles.searchThumbnail} 
+        />
+        <Text style={styles.searchTitle} numberOfLines={2}>
+          {item.snippet.title}
+        </Text>
+        <Text style={styles.searchDate}>{publicationDate}</Text>
+      </View>
     );
   };
 
@@ -113,15 +155,53 @@ const HomeScreen: React.FC = () => {
     </View>
   );
 
+  const renderMainContent = () => {
+    if (searchQuery.trim().length > 0) {
+      return (
+        <View style={styles.searchResultsContainer}>
+          {loading ? (
+            <ActivityIndicator size="large" color="#2B2D42" />
+          ) : (
+            <FlatList
+            data={searchResults}
+            keyExtractor={(item) => item.id}
+            renderItem={renderSearchItem}   
+            contentContainerStyle={{ paddingBottom: 40, paddingTop: 16 }}
+            showsHorizontalScrollIndicator={false}
+          />
+          )}
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.categoriesContainer}>
+        {renderCategory("React Native", reactNativeVideos, () =>
+          console.log("Show more React Native")
+        )}
+        <View style={styles.divider} />
+        {renderCategory("React", reactVideos, () => console.log("Show more React"))}
+        <View style={styles.divider} />
+        {renderCategory("TypeScript", typescriptVideos, () =>
+          console.log("Show more TypeScript")
+        )}
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.rowContainer}>
         <View style={styles.searchBar}>
-          <SearchIcon width={32} height={32} />
           <TextInput
             style={styles.input}
             placeholder="Search videos"
             placeholderTextColor="#AAB0C6"
+            value={searchQuery}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={handleSearch} 
           />
         </View>
         <TouchableOpacity style={styles.settingsIconContainer}>
@@ -129,33 +209,29 @@ const HomeScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.categoriesContainer}>
-        {renderCategory("React Native", reactNativeVideos, () =>
-          console.log("Show more React Native")
-        )}
-        <View style={styles.divider} />
-        {renderCategory("React", reactVideos, () =>
-          console.log("Show more React")
-        )}
-        <View style={styles.divider} />
-        {renderCategory("TypeScript", typescriptVideos, () =>
-          console.log("Show more TypeScript")
-        )}
-      </View>
+      {/* Main area: either categories or search results */}
+      <View style={styles.mainContent}>{renderMainContent()}</View>
 
+      {/* Bottom nav */}
       <View style={styles.navigationPanel}>
         <TouchableOpacity style={styles.navButton}>
-          <HomeIcon width={32} height={32} />
-          <Text style={styles.navButtonText}>Home</Text>
+          <HomeIcon width={32} height={32} stroke={isSearchFocused ? "#FFF" : "#2B2D42"} />
+          <Text style={[styles.navButtonText, { color: isSearchFocused ? "#FFF" : "#2B2D42" }]}>
+            Home
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton}>
-          <SearchIcon width={32} height={32} />
-          <Text style={styles.navButtonText}>Search</Text>
+          <SearchIcon width={32} height={32} fill={isSearchFocused ? "#2B2D42" : "#FFF"} />
+          <Text style={[styles.navButtonText, { color: isSearchFocused ? "#2B2D42" : "#FFF" }]}>
+            Search
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
+
+export default HomeScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -191,10 +267,18 @@ const styles = StyleSheet.create({
   settingsIconContainer: {
     marginLeft: 10,
   },
+  mainContent: {
+    flex: 1,
+    marginTop: 120,
+  },
   categoriesContainer: {
     flex: 1,
     paddingHorizontal: 16,
-    marginTop: 120,
+  },
+  searchResultsContainer: {
+    alignItems: "center",
+    paddingHorizontal: 16,
+    marginBottom: 80, 
   },
   category: {
     marginBottom: 16,
@@ -216,8 +300,13 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     fontWeight: "400",
   },
+  divider: {
+    height: 1,
+    backgroundColor: "#000000",
+    marginVertical: 10,
+  },
   videoContainer: {
-    width: 160,
+    width: 160, 
     marginRight: 16,
     alignItems: "center",
   },
@@ -226,21 +315,18 @@ const styles = StyleSheet.create({
     height: 90,
     borderRadius: 8,
   },
-  videoInfo: {
-    marginTop: 8,
-    alignItems: "center",
-  },
   videoTitle: {
+    marginTop: 8,
     fontSize: 14,
     fontWeight: "bold",
     color: "#333333",
     textAlign: "center",
-    marginBottom: 4,
   },
   videoDate: {
     fontSize: 12,
     color: "#666666",
-    textAlign: "right",
+    marginTop: 2,
+    textAlign:"right"
   },
   navigationPanel: {
     position: "absolute",
@@ -259,14 +345,34 @@ const styles = StyleSheet.create({
   },
   navButtonText: {
     fontSize: 12,
-    color: "#2B2D42",
     marginTop: 5,
   },
-  divider: {
-    height: 1,
-    backgroundColor: "#000000",
-    marginVertical: 10,
+  searchItemContainer: {
+    width: "90%",          
+    alignSelf: "center",   
+    marginBottom: 20,      
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    padding: 10,           
+    shadowColor: "#000",   
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,          
+  },
+  searchThumbnail: {
+    width: "100%",
+    height: 200,           
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  searchTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 4,
+  },
+  searchDate: {
+    fontSize: 14,
+    color: "#777",
   },
 });
-
-export default HomeScreen;
