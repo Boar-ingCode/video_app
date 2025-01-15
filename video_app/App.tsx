@@ -1,11 +1,26 @@
 import React from "react";
-import { SafeAreaView } from "react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import HomeScreen from "./app/(tabs)/Home";
+import SettingsScreen from "./app/(tabs)/Settings";
 
-const App = () => {
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-    </SafeAreaView>
-  );
+export type RootStackParamList = {
+  Home: undefined;          
+  Settings: undefined;     
 };
 
-export default App;
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+export default function AppNavigator() {
+  return (
+    <Stack.Navigator initialRouteName="Home">
+      <Stack.Screen 
+        name="Home"
+        component={HomeScreen}
+      />
+      <Stack.Screen 
+        name="Settings"
+        component={SettingsScreen}
+      />
+    </Stack.Navigator>
+  );
+}

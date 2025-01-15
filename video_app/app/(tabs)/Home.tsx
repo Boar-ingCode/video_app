@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "@/App";
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   View,
   TextInput,
@@ -15,17 +18,21 @@ import SettingsIcon from "../../assets/icons/settings-icon.svg";
 
 const API_KEY = "AIzaSyBeNcN5uuIUx5_TXsFqFFMlPqv8f7LFQwk";
 
-const HomeScreen: React.FC = () => {
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
+const HomeScreen: React.FC = () => {
+  const navigation = useNavigation<HomeScreenNavigationProp>(); 
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
-
   const [loading, setLoading] = useState(false);
-
   const [reactNativeVideos, setReactNativeVideos] = useState<any[]>([]);
   const [reactVideos, setReactVideos] = useState<any[]>([]);
   const [typescriptVideos, setTypescriptVideos] = useState<any[]>([]);
+  
+  type HomeScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Home'
+  >;
 
   useEffect(() => {
     const fetchCategoryVideos = async (
@@ -204,7 +211,7 @@ const HomeScreen: React.FC = () => {
             onSubmitEditing={handleSearch} 
           />
         </View>
-        <TouchableOpacity style={styles.settingsIconContainer}>
+        <TouchableOpacity style={styles.settingsIconContainer} onPress={() => navigation.navigate("Settings")}>
           <SettingsIcon width={32} height={32} />
         </TouchableOpacity>
       </View>
