@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "@/App";
+import { RootStackParamList } from "../../AppNavigator";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   View,
@@ -16,7 +16,7 @@ import SearchIcon from "../../assets/icons/search-icon.svg";
 import HomeIcon from "../../assets/icons/home-icon.svg";
 import SettingsIcon from "../../assets/icons/settings-icon.svg";
 
-const API_KEY = "AIzaSyBeNcN5uuIUx5_TXsFqFFMlPqv8f7LFQwk";
+const API_KEY = "AIzaSyDjW72M-aZEgeqd9s0hZP67Idd6857a-9I";
 
 
 const HomeScreen: React.FC = () => {
@@ -28,11 +28,24 @@ const HomeScreen: React.FC = () => {
   const [reactNativeVideos, setReactNativeVideos] = useState<any[]>([]);
   const [reactVideos, setReactVideos] = useState<any[]>([]);
   const [typescriptVideos, setTypescriptVideos] = useState<any[]>([]);
+  const [javascriptVideos, setJavascriptVideos] = useState<any[]>([]);
+  const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
+  
   
   type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'Home'
   >;
+
+  const videos = [
+    {
+      id: "1",
+      title: "Video 1",
+      thumbnail: "https://via.placeholder.com/150",
+      videoPath: "../../assets/video/broadchurch.mp4",
+    },
+  ];
+
 
   useEffect(() => {
     const fetchCategoryVideos = async (
@@ -69,12 +82,13 @@ const HomeScreen: React.FC = () => {
         fetchCategoryVideos("react+native+tutorial", setReactNativeVideos),
         fetchCategoryVideos("react+tutorial", setReactVideos),
         fetchCategoryVideos("typescript+tutorial", setTypescriptVideos),
+        fetchCategoryVideos("javascript+tutorial", setTypescriptVideos),
       ]);
       setLoading(false);
     };
 
     fetchAllCategories();
-  }, []);
+  }, [])
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return; 
@@ -109,19 +123,37 @@ const HomeScreen: React.FC = () => {
     }
   };
 
+
   const renderVideoItem = ({ item }: { item: any }) => {
     const publicationDate = new Date(item.snippet.publishedAt).toLocaleDateString();
 
     return (
-      <View style={styles.videoContainer}>
-        <Image source={{ uri: item.snippet.thumbnails.medium.url }} style={styles.thumbnail} />
+      <TouchableOpacity
+        style={styles.videoContainer}
+        onPress={() => navigation.navigate("VideoPlayer", { videoPath: item.videoPath })}
+      >
+        <Image
+          source={{ uri: item.snippet.thumbnails.medium.url }}
+          style={styles.thumbnail}
+        />
         <Text style={styles.videoTitle} numberOfLines={2}>
           {item.snippet.title}
         </Text>
         <Text style={styles.videoDate}>{publicationDate}</Text>
-      </View>
+      </TouchableOpacity>
     );
   };
+
+  const renderLocalVideoItem = ({ item }: { item: typeof videos[0] }) => (
+    <TouchableOpacity
+      style={styles.videoContainer}
+      onPress={() => navigation.navigate("VideoPlayer", { videoPath: item.videoPath })}
+    >
+      <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
+      <Text style={styles.videoTitle}>{item.title}</Text>
+    </TouchableOpacity>
+  );
+
 
   const renderSearchItem = ({ item }: { item: any }) => {
     const publicationDate = new Date(item.snippet.publishedAt).toLocaleDateString();
@@ -181,6 +213,10 @@ const HomeScreen: React.FC = () => {
       );
     }
 
+    const renderVideoItem = ({ item }: { item: any }) => {
+      const isPlaying = playingVideoId === item.id;}
+
+
     return (
       <View style={styles.categoriesContainer}>
         {renderCategory("React Native", reactNativeVideos, () =>
@@ -191,6 +227,10 @@ const HomeScreen: React.FC = () => {
         <View style={styles.divider} />
         {renderCategory("TypeScript", typescriptVideos, () =>
           console.log("Show more TypeScript")
+        )}
+        <View style={styles.divider} />
+        {renderCategory("JavaScript", javascriptVideos, () =>
+          console.log("Show more JavaScript")
         )}
       </View>
     );
