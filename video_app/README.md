@@ -13,8 +13,12 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 2. Start the app
 
    ```bash
-    npx expo start
+    npm start
    ```
+
+Additional info:
+
+I didn't hide my api key, you can use it to see if this project works, if the credits are already used, change them to your own key! :P
 
 In the output, you'll find options to open the app in a
 
