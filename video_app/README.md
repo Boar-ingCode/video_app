@@ -14,16 +14,22 @@ This is a **YouTube-based learning application** built using **React Native and 
 ## 🛠️ Setup & Installation
 
 ### 1️⃣ Clone the Repository
+```bash
 git clone https://github.com/your-repo/video_app.git
 cd video_app
+```
 
 ### 2️⃣ Install Dependencies
+```bash
 npm install
 
 ### 3️⃣ Start the App
+```bash
 npx expo start
+```
 
 ### 📂 Project Structure
+```bash
 📦 video_app
 ├── 📂 app
 │   ├── 📂 (tabs)              # Tab navigation screens
@@ -42,7 +48,7 @@ npx expo start
 ├── babel.config.js             # Babel configuration
 ├── package.json                # Dependencies & scripts
 └── README.md                   # Project documentation
-
+```
 
 ### 🔑 Environment Variables
 This app uses environment variables for API keys. DO NOT hardcode keys in your source code.
