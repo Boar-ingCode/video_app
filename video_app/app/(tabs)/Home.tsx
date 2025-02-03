@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { API_KEY } from '@env';
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../AppNavigator";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -15,8 +16,6 @@ import {
 import SearchIcon from "../../assets/icons/search-icon.svg";
 import HomeIcon from "../../assets/icons/home-icon.svg";
 import SettingsIcon from "../../assets/icons/settings-icon.svg";
-
-const API_KEY = "AIzaSyDjW72M-aZEgeqd9s0hZP67Idd6857a-9I";
 
 
 const HomeScreen: React.FC = () => {

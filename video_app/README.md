@@ -1,54 +1,92 @@
-# Welcome to your Expo app 👋
+# 🎬 Video App - Expo & React Native
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is a **YouTube-based learning application** built using **React Native and Expo**. The app features a **tab-based navigation system**, video playback, and user settings.
 
-## Get started
+## 🚀 Features
 
-1. Install dependencies
+- 📌 **Tab Navigation** (Home & Explore)
+- 🎥 **Video Player** (using `react-native-video`)
+- 🎨 **Dark Mode Support**
+- 🔔 **Learning Reminders & Notifications**
+- ⚡ **Optimized Performance with Expo**
+- 🔄 **Haptic Feedback for Tabs**
 
-   ```bash
-   npm install
-   ```
+## 🛠️ Setup & Installation
 
-2. Start the app
-
-   ```bash
-    npm start
-   ```
-
-Additional info:
-
-I didn't hide my api key, you can use it to see if this project works, if the credits are already used, change them to your own key! :P
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+### 1️⃣ Clone the Repository
 ```bash
-npm run reset-project
-```
+git clone https://github.com/your-repo/video_app.git
+cd video_app
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
+2️⃣ Install Dependencies
+npm install
 
-To learn more about developing your project with Expo, look at the following resources:
+3️⃣ Start the App
+npx expo start
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+📂 Project Structure
+📦 video_app
+├── 📂 app
+│   ├── 📂 (tabs)              # Tab navigation screens
+│   │   ├── Home.tsx           # Home screen
+│   │   ├── Explore.tsx        # Explore screen
+│   ├── index.tsx              # Main entry screen
+│   ├── settings.tsx           # User settings screen
+│   ├── videoplayerscreen.tsx  # Video player screen
+├── 📂 assets                   # Images & icons
+├── 📂 components               # UI Components
+├── 📂 constants                # App-wide constants (e.g., colors)
+├── 📂 hooks                    # Custom hooks
+├── 📂 styles                   # Global styles
+├── .env                        # API keys (DO NOT COMMIT)
+├── .gitignore                  # Files to ignore in Git
+├── babel.config.js             # Babel configuration
+├── package.json                # Dependencies & scripts
+└── README.md                   # Project documentation
 
-## Join the community
 
-Join our community of developers creating universal apps.
+🔑 Environment Variables
+This app uses environment variables for API keys. DO NOT hardcode keys in your source code.
+Instead, store them in a .env file:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+API_KEY=YOUR_YOUTUBE_API_KEY
+
+
+Also, ensure you have the env.d.ts file for TypeScript:
+declare module '@env' {
+  export const API_KEY: string;
+}
+
+
+🔗 Dependencies
+Expo (React Native framework)
+
+expo-router (Navigation)
+
+react-native-video (Video playback)
+
+react-native-dotenv (Environment variables)
+
+expo-splash-screen (Custom splash screen)
+
+expo-haptics (Haptic feedback)
+
+
+🛠️ Development Commands
+Command	Description
+npm install	Install dependencies
+npx expo start	Start the development server
+expo build	Build the app for production
+expo start -c	Clear cache & restart Expo
+📌 Next Steps
+🔹 Connect to a Backend API
+
+🔹 Add Authentication (Firebase, Supabase, etc.)
+
+🔹 Enable Push Notifications
+
+🔹 Improve UI & Add Animations
+
+📜 License
+This project is open-source and available under the MIT License.
