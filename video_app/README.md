@@ -14,18 +14,16 @@ This is a **YouTube-based learning application** built using **React Native and 
 ## 🛠️ Setup & Installation
 
 ### 1️⃣ Clone the Repository
-```bash
 git clone https://github.com/your-repo/video_app.git
 cd video_app
 
-
-2️⃣ Install Dependencies
+### 2️⃣ Install Dependencies
 npm install
 
-3️⃣ Start the App
+### 3️⃣ Start the App
 npx expo start
 
-📂 Project Structure
+### 📂 Project Structure
 📦 video_app
 ├── 📂 app
 │   ├── 📂 (tabs)              # Tab navigation screens
@@ -46,12 +44,11 @@ npx expo start
 └── README.md                   # Project documentation
 
 
-🔑 Environment Variables
+### 🔑 Environment Variables
 This app uses environment variables for API keys. DO NOT hardcode keys in your source code.
 Instead, store them in a .env file:
 
 API_KEY=YOUR_YOUTUBE_API_KEY
-
 
 Also, ensure you have the env.d.ts file for TypeScript:
 declare module '@env' {
@@ -59,7 +56,7 @@ declare module '@env' {
 }
 
 
-🔗 Dependencies
+### 🔗 Dependencies
 Expo (React Native framework)
 
 expo-router (Navigation)
@@ -73,7 +70,7 @@ expo-splash-screen (Custom splash screen)
 expo-haptics (Haptic feedback)
 
 
-🛠️ Development Commands
+### 🛠️ Development Commands
 Command	Description
 npm install	Install dependencies
 npx expo start	Start the development server
@@ -88,5 +85,5 @@ expo start -c	Clear cache & restart Expo
 
 🔹 Improve UI & Add Animations
 
-📜 License
+### 📜 License
 This project is open-source and available under the MIT License.
